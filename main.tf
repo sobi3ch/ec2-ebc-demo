@@ -52,6 +52,13 @@ resource "aws_instance" "web" {
     command = "scripts/attach-volumes.sh ${self.id}"
   }
 
+  provisioner "local-exec" {
+    when    = destroy
+    command = "scripts/detach-volumes.sh ${self.id}"
+  }
+
+
+
   tags = {
     Name = "trans.eu"
   }
