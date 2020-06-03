@@ -33,10 +33,10 @@ resource "aws_instance" "web" {
     command = "scripts/attach-volumes.sh ${self.id} ${data.aws_availability_zones.all.names[0]} ${count.index} ${var.volumes_number}}"
   }
 
-  # provisioner "local-exec" {
-  #   when    = destroy
-  #   command = "scripts/detach-volumes.sh ${self.id}"
-  # }
+  provisioner "local-exec" {
+    when    = destroy
+    command = "scripts/detach-volumes.sh ${local.region} ${self.id}"
+  }
 
   tags = {
     Name = "trans.eu"
