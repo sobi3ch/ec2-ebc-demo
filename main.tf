@@ -23,6 +23,7 @@ data "aws_availability_zones" "all" {
 }
 
 resource "aws_instance" "web" {
+  count             = 1
   ami               = data.aws_ami.ubuntu.id
   instance_type     = "t3.micro"
   availability_zone = data.aws_availability_zones.all.names[0]
@@ -58,5 +59,35 @@ resource "aws_ebs_volume" "web" {
 
   tags              = {
     Name = "trans.eu"
+    Disk = count.index+1
+  }
+
+  depends_on = [
+    null_resource.web_cluster
+  ]
+}
+
+data "null_data_source" "values" {
+  count = var.volumes_number
+
+  inputs = {
+    all_server_ids = "${concat(aws_instance.green.*.id, aws_instance.blue.*.id)}"
+    all_server_ips = "${concat(aws_instance.green.*.private_ip, aws_instance.blue.*.private_ip)}"
+  }
+
+  depends_on = [
+    null_resource.web_cluster
+  ]
+}
+
+resource "null_resource" "web_cluster" {
+  # Changes to any instance of the cluster requires re-provisioning
+  triggers = {
+    cluster_instance_ids = "${join(",", aws_instance.web.*.id)}"
+  }
+
+  provisioner "local-exec" {
+    # Bootstrap script called with private_ip of each node in the clutser
+    command = "gather-volumes-information.sh"
   }
 }
