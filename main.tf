@@ -23,7 +23,7 @@ data "aws_availability_zones" "all" {
 }
 
 resource "aws_instance" "web" {
-  count             = 1
+  count             = var.instances_number
   ami               = data.aws_ami.ubuntu.id
   instance_type     = "t3.micro"
   availability_zone = data.aws_availability_zones.all.names[0]
