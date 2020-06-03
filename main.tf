@@ -43,6 +43,10 @@ resource "aws_instance" "web" {
   volume_tags = {
     Name = "trans.eu"
   }
+
+  depends_on = [
+    aws_ebs_volume.web
+  ]
 }
 
 resource "aws_ebs_volume" "web" {
