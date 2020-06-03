@@ -1,6 +1,9 @@
 #!/bin/bash
 
-ID=$1
+EC2_ID=$1
+AZ=$2
+VOLUMES_NUMBER=$3
+INSTANCE_NUMBER=$4
 
 aws ec2 detach-volume \
-  --volume-id vol-09a4293213888ce0c
+  --volume-id $EC2_ID
